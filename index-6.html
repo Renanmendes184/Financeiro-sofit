@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Painel financeiro para loja de roupas Sofit">
+  <meta name="theme-color" content="#7c6af7">
+
+  <!-- PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sofit">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Sofit">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-96.png">
+
+  <title>Sofit — Painel Financeiro</title>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ─── Loader inicial ─────────────────────────────────────────────── -->
+  <div id="loader-global">
+    <div class="loader-spinner"></div>
+    <span style="color:var(--text-muted);font-size:13px;">Carregando...</span>
+  </div>
+
+  <!-- ─── Wrapper principal ──────────────────────────────────────────── -->
+  <div class="app-wrapper">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-icon">S</div>
+        <span class="header-nome" id="nome-loja-header">Sofit</span>
+      </div>
+      <div class="header-acoes">
+        <button class="btn-instalar" id="btn-instalar" aria-label="Instalar app">
+          📲 Instalar
+        </button>
+        <button class="btn-icon" id="btn-tema" aria-label="Alternar tema">
+          ☀️
+        </button>
+      </div>
+    </header>
+
+    <!-- Conteúdo principal (renderizado pelo app.js) -->
+    <main class="app-main" id="conteudo-principal" role="main">
+      <!-- Preenchido dinamicamente pelo JavaScript -->
+    </main>
+
+    <!-- Navegação inferior -->
+    <nav class="app-nav" role="navigation" aria-label="Navegação principal">
+      <button class="nav-btn ativo" data-aba="inicio" aria-label="Início">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Início</span>
+      </button>
+      <button class="nav-btn" data-aba="financeiro" aria-label="Financeiro">
+        <span class="nav-icon">💼</span>
+        <span class="nav-label">Financeiro</span>
+      </button>
+      <button class="nav-btn" data-aba="relatorios" aria-label="Relatórios">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Relatórios</span>
+      </button>
+      <button class="nav-btn" data-aba="config" aria-label="Configurações">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Config</span>
+      </button>
+    </nav>
+
+  </div><!-- /app-wrapper -->
+
+  <!-- Container de Toasts -->
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Scripts — ordem importa: db → ui → export → app -->
+  <script src="js/db.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Script de inicialização inline -->
+  <script>
+    // Aplica tema antes do DOMContentLoaded para evitar flash
+    (function() {
+      try {
+        const tema = localStorage.getItem('sofit_tema');
+        if (tema) document.documentElement.setAttribute('data-tema', JSON.parse(tema));
+      } catch(e) {}
+    })();
+
+    // Atualiza nome da loja no header assim que db.js carregar
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        const config = DB.getConfig();
+        const el = document.getElementById('nome-loja-header');
+        if (el && config.nomeLoja) el.textContent = config.nomeLoja;
+      } catch(e) {}
+
+      // Oculta loader após inicialização
+      setTimeout(() => {
+        const loader = document.getElementById('loader-global');
+        if (loader) loader.style.display = 'none';
+      }, 300);
+    });
+  </script>
+
+</body>
+</html>
